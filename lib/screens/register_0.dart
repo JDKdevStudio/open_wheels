@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:open_wheels/interface/input_decorations.dart';
 import 'package:open_wheels/providers/providers.dart';
 import 'package:open_wheels/widgets/widgets.dart';
@@ -35,16 +36,14 @@ class RegisterScreen extends StatelessWidget {
         height: size.height,
         child: Column(
           children: [
-            //Header principal----------------------------------------------------
+            //*Header principal-------------------------------------------------
             _Header(size: size, boxDecoration: boxDecoration),
 
-            //Texto registrarse---------------------------------------------------
+            //*Texto registrarse------------------------------------------------
             const SizedBox(height: 40),
 
-            //Register Steps
-            ChangeNotifierProvider(
-                create: (_) => FormProvider(),
-                child: Expanded(child: _RegisterForm())),
+            //*Register Steps---------------------------------------------------
+            Expanded(child: _RegisterForm()),
           ],
         ),
       ),
@@ -56,6 +55,9 @@ class _RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final registerForm = Provider.of<FormProvider>(context, listen: false);
+    registerForm.photo =
+        'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/user.png';
+    registerForm.photoName.text = '';
     return Form(
         key: registerForm.formkey,
         child: ScrollConfiguration(
@@ -103,18 +105,19 @@ class _FormFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final registerForm = Provider.of<FormProvider>(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          //Correo Electrónico--------------------------------------------------
+          //*Correo Electrónico-------------------------------------------------
           TextFormField(
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecorations.authInputDecoration(
+            decoration: InputDecorations.inputDecoration1(
                 hintText: 'john.doe@gmail.com',
                 labelText: 'Correo electrónico',
                 prefixIcon: Icons.alternate_email_outlined),
@@ -126,19 +129,19 @@ class _FormFields extends StatelessWidget {
                   ? null
                   : 'El valor ingresado no es válido';
             },
-            onChanged: (value) => registerForm.email = value,
+            onChanged: (value) => registerForm.email = value.trim(),
           ),
           const SizedBox(
             height: 30,
           ),
 
-          //Contraseña----------------------------------------------------------
+          //*Contraseña---------------------------------------------------------
           TextFormField(
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: false,
             obscureText: true,
-            decoration: InputDecorations.authInputDecoration(
+            decoration: InputDecorations.inputDecoration1(
                 hintText: '*****',
                 labelText: 'Contraseña',
                 prefixIcon: Icons.lock_clock_outlined),
@@ -147,19 +150,19 @@ class _FormFields extends StatelessWidget {
                   ? null
                   : 'La contraseña debe de ser de 6 caracteres';
             },
-            onChanged: (value) => registerForm.password = value,
+            onChanged: (value) => registerForm.password = value.trim(),
           ),
           const SizedBox(
             height: 30,
           ),
 
-          //Confirmar contraseña------------------------------------------------
+          //*Confirmar contraseña-----------------------------------------------
           TextFormField(
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: false,
             obscureText: true,
-            decoration: InputDecorations.authInputDecoration(
+            decoration: InputDecorations.inputDecoration1(
                 hintText: '*****',
                 labelText: 'Confirmar Contraseña',
                 prefixIcon: Icons.lock_clock_outlined),
@@ -170,19 +173,19 @@ class _FormFields extends StatelessWidget {
                   ? null
                   : 'Las contraseñas no coinciden';
             },
-            onChanged: (value) => registerForm.confirmpassword = value,
+            onChanged: (value) => registerForm.confirmpassword = value.trim(),
           ),
           const SizedBox(
             height: 30,
           ),
 
-          //Nombres-------------------------------------------------------------
+          //*Nombres------------------------------------------------------------
           TextFormField(
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: true,
-            decoration: InputDecorations.authInputDecoration(
+            decoration: InputDecorations.inputDecoration1(
                 hintText: 'John Doe',
                 labelText: 'Nombres',
                 prefixIcon: Icons.text_fields_outlined),
@@ -191,19 +194,19 @@ class _FormFields extends StatelessWidget {
                   ? null
                   : 'Debes escribir un nombre válido';
             },
-            onChanged: (value) => registerForm.name = value,
+            onChanged: (value) => registerForm.name = value.trim(),
           ),
           const SizedBox(
             height: 30,
           ),
 
-          //Apellidos---------------------------------------------------------
+          //*Apellidos----------------------------------------------------------
           TextFormField(
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: true,
-            decoration: InputDecorations.authInputDecoration(
+            decoration: InputDecorations.inputDecoration1(
                 hintText: 'Walter Mora',
                 labelText: 'Apellidos',
                 prefixIcon: Icons.text_fields_outlined),
@@ -212,31 +215,144 @@ class _FormFields extends StatelessWidget {
                   ? null
                   : 'Debes escribir un apellido válido';
             },
-            onChanged: (value) => registerForm.name = value,
-          ),
-          const SizedBox(
-            height: 30,
-          ),
-          TextFormField(
-            textInputAction: TextInputAction.done,
-            autocorrect: false,
-            obscureText: true,
-            decoration: InputDecorations.authInputDecoration(
-                hintText: '*****',
-                labelText: 'Contraseña',
-                prefixIcon: Icons.lock_clock_outlined),
-            validator: (value) {
-              return (value != null && value.length >= 6)
-                  ? null
-                  : 'La contraseña debe de ser de 6 caracteres';
-            },
-            onChanged: (value) => registerForm.password = value,
+            onChanged: (value) => registerForm.surname = value.trim(),
           ),
           const SizedBox(
             height: 30,
           ),
 
-          //Botón iniciar sesión----------------------------------------------
+          //*Fecha de nacimiento------------------------------------------------
+          TextFormField(
+            controller: registerForm.datePicker,
+            readOnly: true,
+            textInputAction: TextInputAction.next,
+            decoration: InputDecorations.inputDecoration1(
+                hintText: 'Día/Mes/Año',
+                labelText: 'Fecha de nacimiento',
+                prefixIcon: Icons.calendar_month_outlined),
+            validator: (value) {
+              return (registerForm.dateTime != null)
+                  ? null
+                  : 'Debes elegir una fecha de nacimiento válida';
+            },
+            onTap: () => showDatePicker(
+                    context: context,
+                    initialDate: DateTime(2021, 4, 21),
+                    firstDate: DateTime(1900, 4, 21),
+                    lastDate: DateTime(2022))
+                .then(
+              (value) {
+                if (value != null) {
+                  registerForm.dateTime = value;
+                  registerForm.datePicker.text =
+                      '${registerForm.dateTime?.day}/${registerForm.dateTime?.month}/${registerForm.dateTime?.year}';
+                }
+              },
+            ),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+
+          //*Cedula ciudadanía--------------------------------------------------
+          TextFormField(
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
+            autocorrect: true,
+            decoration: InputDecorations.inputDecoration1(
+                hintText: '1078160138',
+                labelText: 'Identifiación',
+                prefixIcon: Icons.credit_card_outlined),
+            validator: (value) {
+              return ((value ?? '').trim().isNotEmpty)
+                  ? null
+                  : 'Debes escribir una identificación válida';
+            },
+            onChanged: (value) => registerForm.identificacion = value.trim(),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+
+          //*Dirección----------------------------------------------------------
+          TextFormField(
+            keyboardType: TextInputType.streetAddress,
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
+            autocorrect: true,
+            decoration: InputDecorations.inputDecoration1(
+                hintText: 'Wall Street',
+                labelText: 'Dirección',
+                prefixIcon: Icons.route_outlined),
+            validator: (value) {
+              return ((value ?? '').trim().isNotEmpty)
+                  ? null
+                  : 'Debes escribir una Dirección válida';
+            },
+            onChanged: (value) => registerForm.address = value.trim(),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+
+          //*Teléfono-----------------------------------------------------------
+          TextFormField(
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            keyboardType: TextInputType.phone,
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
+            autocorrect: true,
+            decoration: InputDecorations.inputDecoration1(
+                hintText: '000 000 0000',
+                labelText: 'Teléfono',
+                prefixIcon: Icons.phone_outlined),
+            validator: (value) {
+              return ((value ?? '').trim().isNotEmpty &&
+                      (value?.length ?? 0) > 7)
+                  ? null
+                  : 'Debes escribir un teléfono válido';
+            },
+            onChanged: (value) => registerForm.phone = value.trim(),
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+
+          //*Foto de Perfil-----------------------------------------------------
+          TextFormField(
+            controller: registerForm.photoName,
+            onTap: registerForm.pickPhoto,
+            readOnly: true,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.next,
+            onEditingComplete: () => FocusScope.of(context).nextFocus(),
+            autocorrect: true,
+            decoration: InputDecorations.inputDecoration2(
+              hintText: 'my-user-photo.png',
+              labelText: 'Foto de Perfil',
+              prefixImage: registerForm.photo,
+              suffixIcon: Icons.link_outlined,
+            ),
+            validator: (value) {
+              return ((value ?? '').trim().isNotEmpty)
+                  ? null
+                  : 'Debes escribir una identificación válida';
+            },
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+
+          CircleAvatar(
+            backgroundColor: Colors.transparent,
+            maxRadius: 110,
+            backgroundImage: NetworkImage(registerForm.photo),
+          ),
+
+          //*Botón iniciar sesión-----------------------------------------------
           MaterialButton(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
@@ -282,54 +398,12 @@ class _FormFields extends StatelessWidget {
                     //     },
                     //   );
                     // },
-                    showDatePicker(
-                            context: context,
-                            initialDate: DateTime(2021, 4, 21),
-                            firstDate: DateTime(1900, 4, 21),
-                            lastDate: DateTime(2022))
-                        .then((value) => registerForm.dateTime = value);
                   },
           ),
           const SizedBox(
             height: 30,
           ),
-          Text(registerForm.dateTime.toString()),
-          const SizedBox(
-            height: 30,
-          ),
         ],
-      ),
-    );
-  }
-}
-
-class Page2 extends StatelessWidget {
-  const Page2({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: const Color(0xff30BAD6),
-      child: Center(
-        child: TextButton(
-          onPressed: () {},
-          child: const Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 40,
-            ),
-            child: Text(
-              'Bienvenido',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-          style: TextButton.styleFrom(
-              backgroundColor: const Color(0xff0098FA),
-              shape: const StadiumBorder()),
-        ),
       ),
     );
   }

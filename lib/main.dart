@@ -21,6 +21,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => BackendProvider()),
+        ChangeNotifierProvider(create: (_) => FormProvider()),
       ],
       child: const MyApp(),
     ),
