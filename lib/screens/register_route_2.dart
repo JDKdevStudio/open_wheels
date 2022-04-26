@@ -34,6 +34,7 @@ class RegisterRouteScreen extends StatelessWidget {
                     target: LatLng(7.068253, -73.108250), zoom: 15),
               ),
               Positioned(
+                top: 300,
                 child: Icon(Icons.search),
               ),
             ]),
