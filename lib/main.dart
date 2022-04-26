@@ -13,6 +13,9 @@ void main() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
+//Phone buttons style
+ Mod.uiOverlay(const Color.fromARGB(255, 255, 255, 255));
+ 
   //Iniciar preferencias de usuario
   await UserPreferences.init();
 
@@ -36,8 +39,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Open Wheels',
-      initialRoute: UserPreferences.autoLogin ? 'home' : 'lobby',
-      routes: AppRputes.routes,
+      initialRoute: UserPreferences.autoLogin ? 'lobby' : 'home',
+      routes: AppRoutes.routes,
     );
   }
 }

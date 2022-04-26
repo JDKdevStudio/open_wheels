@@ -26,6 +26,7 @@ class ResetPasswordScreen extends StatelessWidget {
       ],
     );
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xff1C2321),
         elevation: 0,

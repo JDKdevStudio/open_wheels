@@ -26,6 +26,7 @@ class LoginScreen extends StatelessWidget {
       ],
     );
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xff1C2321),
         elevation: 0,
@@ -176,7 +177,7 @@ class _LoginForm extends StatelessWidget {
                           .then(
                         (value) {
                           loginForm.isLoading = false;
-                          if (value.email != null) {
+                          if (userdata.userData.email != null) {
                             Navigator.pushNamedAndRemoveUntil(
                                 context, 'home', (route) => false);
                           } else {

@@ -27,6 +27,7 @@ class RegisterScreen extends StatelessWidget {
     );
 
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: const Color(0xff1C2321),
         elevation: 0,
@@ -58,6 +59,9 @@ class _RegisterForm extends StatelessWidget {
     registerForm.photo =
         'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/user.png';
     registerForm.photoName.text = '';
+    print('xd');
+    registerForm.certificate = registerForm.photo;
+    registerForm.certificateName.text = '';
     return Form(
         key: registerForm.formkey,
         child: ScrollConfiguration(
@@ -114,8 +118,6 @@ class _FormFields extends StatelessWidget {
           //*Correo Electrónico-------------------------------------------------
           TextFormField(
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            autocorrect: false,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecorations.inputDecoration1(
                 hintText: 'john.doe@gmail.com',
@@ -138,7 +140,6 @@ class _FormFields extends StatelessWidget {
           //*Contraseña---------------------------------------------------------
           TextFormField(
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: false,
             obscureText: true,
             decoration: InputDecorations.inputDecoration1(
@@ -159,8 +160,6 @@ class _FormFields extends StatelessWidget {
           //*Confirmar contraseña-----------------------------------------------
           TextFormField(
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            autocorrect: false,
             obscureText: true,
             decoration: InputDecorations.inputDecoration1(
                 hintText: '*****',
@@ -183,7 +182,6 @@ class _FormFields extends StatelessWidget {
           TextFormField(
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: true,
             decoration: InputDecorations.inputDecoration1(
                 hintText: 'John Doe',
@@ -204,7 +202,6 @@ class _FormFields extends StatelessWidget {
           TextFormField(
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: true,
             decoration: InputDecorations.inputDecoration1(
                 hintText: 'Walter Mora',
@@ -225,7 +222,6 @@ class _FormFields extends StatelessWidget {
           TextFormField(
             controller: registerForm.datePicker,
             readOnly: true,
-            textInputAction: TextInputAction.next,
             decoration: InputDecorations.inputDecoration1(
                 hintText: 'Día/Mes/Año',
                 labelText: 'Fecha de nacimiento',
@@ -259,8 +255,6 @@ class _FormFields extends StatelessWidget {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            autocorrect: true,
             decoration: InputDecorations.inputDecoration1(
                 hintText: '1078160138',
                 labelText: 'Identifiación',
@@ -280,7 +274,6 @@ class _FormFields extends StatelessWidget {
           TextFormField(
             keyboardType: TextInputType.streetAddress,
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
             autocorrect: true,
             decoration: InputDecorations.inputDecoration1(
                 hintText: 'Wall Street',
@@ -302,8 +295,6 @@ class _FormFields extends StatelessWidget {
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.phone,
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            autocorrect: true,
             decoration: InputDecorations.inputDecoration1(
                 hintText: '000 000 0000',
                 labelText: 'Teléfono',
@@ -323,13 +314,14 @@ class _FormFields extends StatelessWidget {
           //*Foto de Perfil-----------------------------------------------------
           TextFormField(
             controller: registerForm.photoName,
-            onTap: registerForm.pickPhoto,
+            onTap: () {
+              registerForm.pickController = 0;
+              registerForm.pickPhoto();
+            },
             readOnly: true,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
-            onEditingComplete: () => FocusScope.of(context).nextFocus(),
-            autocorrect: true,
             decoration: InputDecorations.inputDecoration2(
               hintText: 'my-user-photo.png',
               labelText: 'Foto de Perfil',
@@ -339,7 +331,7 @@ class _FormFields extends StatelessWidget {
             validator: (value) {
               return ((value ?? '').trim().isNotEmpty)
                   ? null
-                  : 'Debes escribir una identificación válida';
+                  : 'Debes subir una foto válida';
             },
           ),
           const SizedBox(
@@ -350,6 +342,36 @@ class _FormFields extends StatelessWidget {
             backgroundColor: Colors.transparent,
             maxRadius: 110,
             backgroundImage: NetworkImage(registerForm.photo),
+          ),
+
+          //*Certificado judicial--------------------------------------------
+          TextFormField(
+            controller: registerForm.certificateName,
+            onTap: () {
+              registerForm.pickController = 1;
+              registerForm.pickPhoto();
+            },
+            readOnly: true,
+            decoration: InputDecorations.inputDecoration2(
+              hintText: 'my-certificate.png',
+              labelText: 'Certificado Judicial',
+              prefixImage: registerForm.certificate,
+              suffixIcon: Icons.link_outlined,
+            ),
+            validator: (value) {
+              return ((value ?? '').trim().isNotEmpty)
+                  ? null
+                  : 'Debes subir un certificado válido';
+            },
+          ),
+          const SizedBox(
+            height: 30,
+          ),
+
+          CircleAvatar(
+            backgroundColor: Colors.transparent,
+            maxRadius: 110,
+            backgroundImage: NetworkImage(registerForm.certificate),
           ),
 
           //*Botón iniciar sesión-----------------------------------------------

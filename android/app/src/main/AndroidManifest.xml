@@ -4,6 +4,9 @@
         android:label="Open Wheels"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyBVbY5QBvx2mX8IHMKlBpEd7mok6ME00y0"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

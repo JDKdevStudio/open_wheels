@@ -6,17 +6,15 @@ import 'package:http/http.dart' as http;
 import 'package:open_wheels/classes/user_data.dart';
 
 class BackendProvider extends ChangeNotifier {
-  late UserData user;
+  late UserData userData;
 
-  Future<UserData> loginUser(
-      {required String user, required String pass}) async {
+  Future<void> loginUser({required String user, required String pass}) async {
     var response = await http.post(
       Uri.parse('https://logicalgate.backendless.app/api/users/login'),
       body: jsonEncode({"login": user, "password": pass}),
       headers: {"Content-Type": "application/json"},
     );
-    final userData = UserData.fromJson(jsonDecode(response.body));
-    return userData;
+    userData = UserData.fromJson(jsonDecode(response.body));
   }
 
 //Reiniciar contraseña----------------------------------------------------------
