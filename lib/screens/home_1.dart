@@ -1,5 +1,6 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:open_wheels/providers/backend_provider.dart';
 import 'package:open_wheels/providers/navigator_provider.dart';
 import 'package:provider/provider.dart';
@@ -60,7 +61,16 @@ class HomeScreen extends StatelessWidget {
           _HomePage(),
           Center(
             child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, 'register_route'),
+                onPressed: () async {
+                  var permission = await Geolocator.checkPermission();
+                  if (permission == LocationPermission.denied) {
+                    permission = await Geolocator.requestPermission();
+                    if (permission == LocationPermission.deniedForever) {
+                      Geolocator.openLocationSettings();
+                    }
+                  }
+                  Navigator.pushNamed(context, 'register_route');
+                },
                 child: Text('PRUEBAS')),
           )
         ],

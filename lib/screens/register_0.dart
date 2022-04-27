@@ -59,8 +59,8 @@ class _RegisterForm extends StatelessWidget {
     registerForm.photo =
         'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/user.png';
     registerForm.photoName.text = '';
-    print('xd');
-    registerForm.certificate = registerForm.photo;
+    registerForm.certificate =
+        'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/certificate.png';
     registerForm.certificateName.text = '';
     return Form(
         key: registerForm.formkey,
@@ -319,8 +319,6 @@ class _FormFields extends StatelessWidget {
               registerForm.pickPhoto();
             },
             readOnly: true,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            keyboardType: TextInputType.number,
             textInputAction: TextInputAction.next,
             decoration: InputDecorations.inputDecoration2(
               hintText: 'my-user-photo.png',
@@ -336,12 +334,6 @@ class _FormFields extends StatelessWidget {
           ),
           const SizedBox(
             height: 30,
-          ),
-
-          CircleAvatar(
-            backgroundColor: Colors.transparent,
-            maxRadius: 110,
-            backgroundImage: NetworkImage(registerForm.photo),
           ),
 
           //*Certificado judicial--------------------------------------------

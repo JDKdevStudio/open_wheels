@@ -3,25 +3,23 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 class FormProvider extends ChangeNotifier {
-  //properties------------------------------------------------------------------
-
-  //Global key formController
+  //*Global key formController--------------------------------------------------
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
-  //Correo electrónico
+  //*Correo electrónico---------------------------------------------------------
   String email = '';
 
-  //Contraseña
+  //*Contraseña-----------------------------------------------------------------
   String password = '';
   String confirmpassword = '';
 
-  //Nombres
+  //*Nombres--------------------------------------------------------------------
   String name = '';
 
-  //Apellidos
+  //*Apellidos------------------------------------------------------------------
   String surname = '';
 
-  //Fecha de nacimiento
+  //*Fecha de nacimiento--------------------------------------------------------
   final datePicker = TextEditingController();
   DateTime? _dateTime;
   DateTime? get dateTime => _dateTime;
@@ -30,13 +28,13 @@ class FormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-//Identificación
+//*Identificación---------------------------------------------------------------
   String identificacion = '';
 
-//Dirección
+//*Dirección--------------------------------------------------------------------
   String address = '';
 
-//Teléfono
+//*Teléfono---------------------------------------------------------------------
   String phone = '';
 
 //*Foto de perfil---------------------------------------------------------------

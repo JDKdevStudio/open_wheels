@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:open_wheels/data/preferences.dart';
 import 'package:open_wheels/providers/providers.dart';
 import 'package:open_wheels/routes/app_routes.dart';
+import 'package:open_wheels/services/places_service.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -14,8 +15,8 @@ void main() async {
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
 //Phone buttons style
- Mod.uiOverlay(const Color.fromARGB(255, 255, 255, 255));
- 
+  Mod.uiOverlay(const Color.fromARGB(255, 255, 255, 255));
+
   //Iniciar preferencias de usuario
   await UserPreferences.init();
 
@@ -25,6 +26,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => BackendProvider()),
         ChangeNotifierProvider(create: (_) => FormProvider()),
+        ChangeNotifierProvider(create: (_) => PlacesService()),
       ],
       child: const MyApp(),
     ),
@@ -39,7 +41,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Open Wheels',
-      initialRoute: UserPreferences.autoLogin ? 'lobby' : 'home',
+      initialRoute: UserPreferences.autoLogin ? 'home' : 'lobby',
       routes: AppRoutes.routes,
     );
   }

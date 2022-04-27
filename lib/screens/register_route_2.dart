@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:open_wheels/search/search_origin.dart';
+import 'package:open_wheels/classes/place_search.dart';
+import 'package:open_wheels/search/search_route_point.dart';
+import 'package:open_wheels/services/places_service.dart';
 
 class RegisterRouteScreen extends StatelessWidget {
   const RegisterRouteScreen({Key? key}) : super(key: key);
@@ -20,22 +22,33 @@ class RegisterRouteScreen extends StatelessWidget {
                 child: TextFormField(),
               ),
               IconButton(
-                onPressed: () =>
-                    showSearch(context: context, delegate: SearchOrigin()),
+                onPressed: () async {
+                  PlaceSearch result = await showSearch(
+                      context: context, delegate: SearchPlacesAddress());
+                },
                 icon: const Icon(Icons.search_outlined),
               )
             ],
           ),
           Expanded(
-            child: Stack(children: const [
-              GoogleMap(
-                myLocationEnabled: false,
+            child: Stack(children: [
+              const GoogleMap(
+                myLocationEnabled: true,
                 initialCameraPosition: CameraPosition(
                     target: LatLng(7.068253, -73.108250), zoom: 15),
               ),
               Positioned(
                 top: 300,
-                child: Icon(Icons.search),
+                child: GestureDetector(
+                    child: const Icon(Icons.search),
+                    onTap: () {
+                      var test = PlacesService();
+                      test
+                          .getAutocomplete('cacique')
+                          .then((value) => value.forEach((element) {
+                                print(element.description);
+                              }));
+                    }),
               ),
             ]),
           ),
