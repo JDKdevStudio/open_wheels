@@ -13,5 +13,6 @@ class AppRoutes {
     'profile': (_) => const UserProfileScreen(),
     'register_route': (_) => const RegisterRouteScreen(),
     'register_car': (_) => const RegisterCarScreen(),
+     'car_info': (_) => const CarInfoScreen(),
   };
 }

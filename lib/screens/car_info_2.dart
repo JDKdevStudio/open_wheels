@@ -1,42 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:open_wheels/providers/providers.dart';
+import 'package:open_wheels/classes/car.dart';
 
-class UserProfileScreen extends StatelessWidget {
-  const UserProfileScreen({Key? key}) : super(key: key);
+class CarInfoScreen extends StatelessWidget {
+  const CarInfoScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as BackendProvider;
+    final args = ModalRoute.of(context)!.settings.arguments as Car;
     final size = MediaQuery.of(context).size;
-    final dateTime = DateTime.parse(args.userData.birthday!);
-    final data = {
-      'Nombres': args.userData.name,
-      'Apellidos': args.userData.surname,
-      'Identificación': args.userData.id,
-      "Teléfono": args.userData.phone,
-      "Fecha de Nacimiento":
-          '${dateTime.day}/${dateTime.month}/${dateTime.year}',
-      'Dirección': args.userData.address,
-      "Certificado Judicial": 'my-certificate.png',
-      "Calificación": args.userData.rating.toString()
+    final Map<String, String> data = {
+      'Placa': args.placa!,
+      'Modelo': args.modelo!,
+      'Clase de Vehículo': args.clase!,
+      "Capacidad": args.capacidad.toString(),
+      'Color': args.color!,
+      "Foto de Vehículo": 'my-car-photo.png',
+      "Tarjeta de Propiedad": 'my-property-card.png'
     };
     const dataIcons = [
-      Icon(Icons.text_fields_outlined),
-      Icon(Icons.text_fields_outlined),
-      Icon(Icons.credit_card_outlined),
+      Icon(Icons.notes_outlined),
+      Icon(Icons.directions_car_outlined),
+      Icon(Icons.groups_outlined),
       Icon(Icons.phone_outlined),
-      Icon(Icons.calendar_month_outlined),
-      Icon(Icons.route_outlined),
+      Icon(Icons.palette_outlined),
+      ImageIcon(
+        NetworkImage(
+            'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/photoCar.png'),
+      ),
       ImageIcon(
         NetworkImage(
             'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/certificate.png'),
       ),
-      Icon(Icons.star_border_outlined)
     ];
     return Scaffold(
       backgroundColor: const Color(0xff1C2321),
       appBar: AppBar(
-        title: const Text('Información de Usuario'),
+        title: const Text('Información de Vehículo'),
         centerTitle: true,
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -79,23 +78,22 @@ class UserProfileScreen extends StatelessWidget {
                       itemBuilder: (_, int index) {
                         return ListTile(
                           leading: dataIcons[index],
-                          title: Text(data.values.toList()[index]!),
+                          title: Text(data.values.toList()[index]),
                           subtitle: Text(data.keys.toList()[index]),
-                          trailing: index == 6
+                          trailing: index == 5 || index == 6
                               ? const Icon(
                                   Icons.link_outlined,
                                   color: Colors.black,
                                 )
                               : null,
                           onTap: () {
-                            index == 6
+                            index == 5
                                 ? showDialog(
                                     barrierDismissible: true,
                                     context: context,
                                     builder: (_) => AlertDialog(
-                                      title: const Text('Certificado Judicial'),
-                                      content: Image.network(
-                                          args.userData.certificate!),
+                                      title: const Text('Foto del Vehículo'),
+                                      content: Image.network(args.photo!),
                                       elevation: 5,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -112,7 +110,31 @@ class UserProfileScreen extends StatelessWidget {
                                       ],
                                     ),
                                   )
-                                : null;
+                                : index == 6
+                                    ? showDialog(
+                                        barrierDismissible: true,
+                                        context: context,
+                                        builder: (_) => AlertDialog(
+                                          title: const Text(
+                                              'Tarjeta de Propiedad'),
+                                          content: Image.network(args.card!),
+                                          elevation: 5,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusDirectional
+                                                    .circular(10),
+                                          ),
+                                          backgroundColor: Colors.white,
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () =>
+                                                  Navigator.pop(context),
+                                              child: const Text('Cerrar'),
+                                            )
+                                          ],
+                                        ),
+                                      )
+                                    : null;
                           },
                         );
                       },
@@ -134,7 +156,7 @@ class _UserHeader extends StatelessWidget {
     required this.args,
   }) : super(key: key);
 
-  final BackendProvider args;
+  final Car args;
 
   @override
   Widget build(BuildContext context) {
@@ -159,20 +181,20 @@ class _UserHeader extends StatelessWidget {
             CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey,
-              backgroundImage: NetworkImage(args.userData.avatar!),
+              backgroundImage: NetworkImage(args.photo!),
             ),
             Expanded(
               child: Column(
                 children: [
                   Text(
-                    args.userData.name!,
+                    args.placa!,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    args.userData.email!,
+                    args.user!,
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],
