@@ -7,20 +7,20 @@ import 'package:open_wheels/services/places_service.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  //SafeProtocol:> iniciar ui en caso de un delay en el future response
+  //*SafeProtocol:> iniciar ui en caso de un delay en el future response--------
   WidgetsFlutterBinding.ensureInitialized();
 
-  //Bloquear orientación de pantalla:> portrait
+  //*Bloquear orientación de pantalla:> portrait--------------------------------
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
 
-//Phone buttons style
+//*Phone buttons style----------------------------------------------------------
   Mod.uiOverlay(const Color.fromARGB(255, 255, 255, 255));
 
-  //Iniciar preferencias de usuario
+  //*Iniciar preferencias de usuario--------------------------------------------
   await UserPreferences.init();
 
-  //iniciar aplicación
+  //*iniciar aplicación---------------------------------------------------------
   runApp(
     MultiProvider(
       providers: [

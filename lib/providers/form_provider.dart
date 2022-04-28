@@ -1,6 +1,8 @@
 import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:open_wheels/classes/classes.dart';
+import 'package:uuid/uuid.dart';
 
 class FormProvider extends ChangeNotifier {
   //*Global key formController--------------------------------------------------
@@ -76,12 +78,82 @@ class FormProvider extends ChangeNotifier {
             certificateName.text = _fileName!;
             certificate = response.secureUrl;
             break;
+          case 2:
+            photoCarName.text = _fileName!;
+            photoCar = response.secureUrl;
+            break;
         }
         notifyListeners();
       } on CloudinaryException {
         throw 'error';
       }
     }
+  }
+
+//*Resetear PickerValues--------------------------------------------------------
+  void resetPicker() {
+    photo =
+        'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/user.png';
+    photoName.text = '';
+    certificate =
+        'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/certificate.png';
+    certificateName.text = '';
+    datePicker.text = '';
+    photoCar =
+        'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/photoCar.png';
+    photoCarName.text = '';
+  }
+
+//*Generar userRegiser class----------------------------------------------------
+  UserData userDataValues() {
+    return UserData(
+      email: email,
+      password: password,
+      name: name,
+      surname: surname,
+      birthday: dateTime.toString(),
+      id: identificacion,
+      address: address,
+      phone: phone,
+      avatar: photo,
+      certificate: certificate,
+    );
+  }
+
+//?Placa vehículo---------------------------------------------------------------
+  String placa = '';
+
+//?Modelo vehículo--------------------------------------------------------------
+  String modelo = '';
+
+//?Clase vehículo---------------------------------------------------------------
+  String clase = '';
+
+//?Capacidad vehículo-----------------------------------------------------------
+  String capacidad = '';
+
+//?Color vehículo---------------------------------------------------------------
+  String color = '';
+
+//?Foto vehículo----------------------------------------------------------------
+  final photoCarName = TextEditingController();
+  String photoCar = '';
+
+//?Generar Car class------------------------------------------------------------
+  Car carDataValues(String user) {
+    var carId = const Uuid();
+    return Car(
+      carStatus: 'DISABLED',
+      color: color,
+      photo: photoCar,
+      modelo: modelo,
+      carId: carId.v1(),
+      clase: clase,
+      user: user,
+      card: certificate,
+      placa: placa,
+      capacidad: int.parse(capacidad),
+    );
   }
 
 //*Validar formulario-----------------------------------------------------------

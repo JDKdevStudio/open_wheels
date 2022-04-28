@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:open_wheels/classes/user_data.dart';
+import 'package:open_wheels/classes/classes.dart';
 
 class BackendProvider extends ChangeNotifier {
+//!Iniciar sesión---------------------------------------------------------------
   late UserData userData;
-
   Future<void> loginUser({required String user, required String pass}) async {
     var response = await http.post(
       Uri.parse('https://logicalgate.backendless.app/api/users/login'),
@@ -17,19 +16,10 @@ class BackendProvider extends ChangeNotifier {
     userData = UserData.fromJson(jsonDecode(response.body));
   }
 
-//Reiniciar contraseña----------------------------------------------------------
+//!Reiniciar contraseña---------------------------------------------------------
   Future<bool> resetUserPassword(BuildContext context, String email) async {
-    late final http.Response response;
-    await APIManager.getAPICall(
-      context,
-      Uri.parse(
-        Uri.encodeFull(
-            'https://logicalgate.backendless.app/api/users/restorepassword/$email'),
-      ),
-    ).then((value) {
-      if (value == null) return;
-      response = value;
-    });
+    var response = await http.get(Uri.parse(Uri.encodeFull(
+        'https://logicalgate.backendless.app/api/users/restorepassword/$email')));
     if (response.statusCode != 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -41,36 +31,101 @@ class BackendProvider extends ChangeNotifier {
     }
     return true;
   }
-}
 
-//Clase de soporte para manejar todos los errores de httpRequest----------------
-class APIManager {
-  //Método de acceso global para hacer getAPI-----------------------------------
-  static Future<dynamic> getAPICall(BuildContext context, Uri url,
-      {Map<String, String>? headers}) async {
-    late final http.Response response;
-    try {
-      response = await http.get(url, headers: headers);
-      return response;
-    } on SocketException {
+//!Registrar usuario------------------------------------------------------------
+  Future<bool> userRegister(BuildContext context, UserData userRegister) async {
+    var response = await http.post(
+      Uri.parse('https://logicalgate.backendless.app/api/users/register'),
+      body: jsonEncode(userRegister.toJson()),
+      headers: {"Content-Type": "application/json"},
+    );
+    if (response.statusCode != 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text(
-              'Parece que no estás conecatado a internet, intentalo más tarde'),
+          content: const Text('El correo especificado ya está registrado'),
           action: SnackBarAction(label: 'cerrar', onPressed: () {}),
         ),
       );
-    } on TimeoutException {
+      return false;
+    }
+    final userId = UserData.fromJson(jsonDecode(response.body)).objectId;
+    response = await http.put(
+      Uri.parse(
+          'https://api.backendless.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/B30E6955-FFEA-401C-9C33-3CEA5BCE5034/users/$userId/status'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(
+        {"userStatus": "DISABLED"},
+      ),
+    );
+    return true;
+  }
+
+//!Obtener vehículos------------------------------------------------------------
+  final List<Car> _userCars = [];
+
+  Future<List<Car>> getuserCars() async {
+    _userCars.clear();
+    var response = await http.get(
+        Uri.parse(
+            'https://logicalgate.backendless.app/api/data/cars?where=carStatus%20%3D%27ENABLED%27%20and%20user%3D%27${userData.email}%27'),
+        headers: {'Content-Type': ''});
+    List<dynamic> results = jsonDecode(response.body);
+    for (var e in results) {
+      _userCars.add(Car.fromJson(e));
+    }
+    return _userCars;
+  }
+
+  //!Registrar vehículo---------------------------------------------------------
+  Future<bool> carRegister(BuildContext context, Car car) async {
+    var response = await http.post(
+        Uri.parse('https://logicalgate.backendless.app/api/data/cars'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(car.toJson()));
+    if (response.statusCode != 200) {
+      return false;
+    }
+    return true;
+  }
+
+  //!Panel administrador--------------------------------------------------------
+  final List<UserData> _pendingUsers = [];
+  List<Car> pendingCars = [];
+
+  Future<List<UserData>> getPendingUsers() async {
+    _pendingUsers.clear();
+    var response = await http.get(
+        Uri.parse(
+            'https://logicalgate.backendless.app/api/data/Users?where=userStatus%3D%27DISABLED%27'),
+        headers: {'Content-Type': ''});
+    List<dynamic> results = jsonDecode(response.body);
+    for (var e in results) {
+      _pendingUsers.add(UserData.fromJson(e));
+    }
+    return _pendingUsers;
+  }
+
+  Future<void> aproveUser(BuildContext context, String userId) async {
+    var response = await http.put(
+      Uri.parse(
+          'https://api.backendless.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/B30E6955-FFEA-401C-9C33-3CEA5BCE5034/users/$userId/status'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(
+        {"userStatus": "ENABLED"},
+      ),
+    );
+    if (response.statusCode == 200) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Parece que hubo un error, intentalo más tarde'),
+          content: const Text('Usuario aprobado exitosamente'),
           action: SnackBarAction(label: 'cerrar', onPressed: () {}),
         ),
       );
-    } on Error {
+      notifyListeners();
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: const Text('Parece que hubo un error, intentalo más tarde'),
+          content: const Text('Ha ocurrido un error, inténtelo mas tarde'),
           action: SnackBarAction(label: 'cerrar', onPressed: () {}),
         ),
       );

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:open_wheels/providers/form_provider.dart';
 import 'package:open_wheels/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 class LobbyScreen extends StatelessWidget {
   const LobbyScreen({Key? key}) : super(key: key);
@@ -41,7 +43,12 @@ class LobbyScreen extends StatelessWidget {
 
                   //Botón para registrarse
                   ElevatedButton(
-                    onPressed: () => Navigator.pushNamed(context, 'register'),
+                    onPressed: () {
+                      final resetRegister =
+                          Provider.of<FormProvider>(context, listen: false);
+                      resetRegister.resetPicker();
+                      Navigator.pushNamed(context, 'register');
+                    },
                     child: const Text(
                       'Registrarse',
                       style: TextStyle(fontSize: 17),

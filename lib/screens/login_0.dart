@@ -200,7 +200,12 @@ class _LoginForm extends StatelessWidget {
 
             //Registrarse-------------------------------------------------------
             GestureDetector(
-              onTap: () => Navigator.pushNamed(context, 'register'),
+              onTap: () {
+                final resetRegister =
+                    Provider.of<FormProvider>(context, listen: false);
+                resetRegister.resetPicker();
+                Navigator.pushNamed(context, 'register');
+              },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [

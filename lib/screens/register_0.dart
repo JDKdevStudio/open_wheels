@@ -56,12 +56,6 @@ class _RegisterForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final registerForm = Provider.of<FormProvider>(context, listen: false);
-    registerForm.photo =
-        'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/user.png';
-    registerForm.photoName.text = '';
-    registerForm.certificate =
-        'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/certificate.png';
-    registerForm.certificateName.text = '';
     return Form(
         key: registerForm.formkey,
         child: ScrollConfiguration(
@@ -109,6 +103,7 @@ class _FormFields extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final registerForm = Provider.of<FormProvider>(context);
+    final registerUser = Provider.of<BackendProvider>(context, listen: false);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 25),
@@ -180,6 +175,9 @@ class _FormFields extends StatelessWidget {
 
           //*Nombres------------------------------------------------------------
           TextFormField(
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\s]"))
+            ],
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             autocorrect: true,
@@ -200,6 +198,9 @@ class _FormFields extends StatelessWidget {
 
           //*Apellidos----------------------------------------------------------
           TextFormField(
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-Z\s]"))
+            ],
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             autocorrect: true,
@@ -239,7 +240,7 @@ class _FormFields extends StatelessWidget {
                 .then(
               (value) {
                 if (value != null) {
-                  registerForm.dateTime = value;
+                  registerForm.dateTime =value;
                   registerForm.datePicker.text =
                       '${registerForm.dateTime?.day}/${registerForm.dateTime?.month}/${registerForm.dateTime?.year}';
                 }
@@ -360,12 +361,6 @@ class _FormFields extends StatelessWidget {
             height: 30,
           ),
 
-          CircleAvatar(
-            backgroundColor: Colors.transparent,
-            maxRadius: 110,
-            backgroundImage: NetworkImage(registerForm.certificate),
-          ),
-
           //*Botón iniciar sesión-----------------------------------------------
           MaterialButton(
             shape: RoundedRectangleBorder(
@@ -390,28 +385,26 @@ class _FormFields extends StatelessWidget {
                     FocusScope.of(context).unfocus();
                     if (!registerForm.isValidForm()) return;
                     registerForm.isLoading = true;
-                    //   userdata
-                    //       .loginUser(
-                    //           user: registerForm.email, pass: registerForm.password)
-                    //       .then(
-                    //     (value) {
-                    //       registerForm.isLoading = false;
-                    //       if (value.email != null) {
-                    //         Navigator.pushNamedAndRemoveUntil(
-                    //             context, 'home', (route) => false);
-                    //       } else {
-                    //         ScaffoldMessenger.of(context).showSnackBar(
-                    //           SnackBar(
-                    //             content: const Text(
-                    //                 'Usuario o contraseña incorrectos'),
-                    //             action: SnackBarAction(
-                    //                 label: 'cerrar', onPressed: () {}),
-                    //           ),
-                    //         );
-                    //       }
-                    //     },
-                    //   );
-                    // },
+
+                    registerUser
+                        .userRegister(context, registerForm.userDataValues())
+                        .then(
+                      (value) {
+                        registerForm.isLoading = false;
+                        if (value == true) {
+                          Navigator.pushReplacementNamed(
+                            context,
+                            'warnings',
+                            arguments: {
+                              'icon': Icons.check_circle_outlined,
+                              'title': 'Registro exitoso',
+                              'data':
+                                  'Usuario registrado exitosamente, te notificaremos cuando hayamos aprobado tu cuenta.'
+                            },
+                          );
+                        }
+                      },
+                    );
                   },
           ),
           const SizedBox(

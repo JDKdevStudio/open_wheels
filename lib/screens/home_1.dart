@@ -1,8 +1,8 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:open_wheels/providers/backend_provider.dart';
-import 'package:open_wheels/providers/navigator_provider.dart';
+import 'package:open_wheels/classes/classes.dart';
+import 'package:open_wheels/providers/providers.dart';
+import 'package:open_wheels/screens/register_car_2.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -12,9 +12,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigatorProvider = Provider.of<NavigatorProvider>(context);
-    final _pageNavigator = PageController(
-        initialPage: navigatorProvider.navigationIndex, keepPage: true);
+    final _pageNavigator = PageController(initialPage: 0, keepPage: true);
+    final userData = Provider.of<BackendProvider>(context, listen: false);
     return Scaffold(
       key: _scaffoldkey,
       endDrawer: const _DrawerProfile(),
@@ -37,17 +36,18 @@ class HomeScreen extends StatelessWidget {
           ),
         ]),
         child: CurvedNavigationBar(
-          index: navigatorProvider.navigationIndex,
+          index: 0,
           animationDuration: const Duration(milliseconds: 300),
           backgroundColor: Colors.transparent,
-          items: const [
-            Icon(Icons.person_pin_circle_outlined, size: 30),
-            Icon(Icons.map_outlined, size: 30),
-            Icon(Icons.alt_route_outlined, size: 30),
-            Icon(Icons.directions_car_outlined, size: 30),
+          items: [
+            const Icon(Icons.person_pin_circle_outlined, size: 30),
+            const Icon(Icons.map_outlined, size: 30),
+            const Icon(Icons.alt_route_outlined, size: 30),
+            const Icon(Icons.directions_car_outlined, size: 30),
+            if (userData.userData.role == 'admin')
+              const Icon(Icons.admin_panel_settings_outlined),
           ],
           onTap: (index) {
-            navigatorProvider.navigationIndex = index;
             _pageNavigator.animateToPage(index,
                 duration: const Duration(milliseconds: 500),
                 curve: Curves.ease);
@@ -55,29 +55,56 @@ class HomeScreen extends StatelessWidget {
         ),
       ),
       body: PageView(
+        physics: const NeverScrollableScrollPhysics(),
         controller: _pageNavigator,
         children: [
-          _HomePage(),
-          _HomePage(),
-          Center(
-            child: ElevatedButton(
-                onPressed: () async {
-                  var permission = await Geolocator.checkPermission();
-                  if (permission == LocationPermission.denied) {
-                    permission = await Geolocator.requestPermission();
-                    if (permission == LocationPermission.deniedForever) {
-                      Geolocator.openLocationSettings();
-                    }
-                  }
-                  Navigator.pushNamed(context, 'register_route');
-                },
-                child: Text('PRUEBAS')),
-          )
+          const _HomePage(),
+          const _HomePage(),
+          const _DriverPage(),
+          if (userData.userData.role == 'admin') const _AdminPage(),
         ],
-        onPageChanged: (index) {
-          navigatorProvider.navigationIndex = index;
-        },
       ),
+    );
+  }
+}
+
+class _DriverPage extends StatelessWidget {
+  const _DriverPage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    return Column(
+      children: [
+        //*Header---------------------------------------------------------------
+        Container(
+          child: Center(
+            child: Column(
+              children: const [
+                Text(
+                  'Solicitudes Pendientes',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          width: double.infinity,
+          height: size.height * 0.15,
+          decoration: const BoxDecoration(
+            color: Color(0xff1C2321),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(40),
+              bottomRight: Radius.circular(40),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -96,7 +123,6 @@ class _DrawerProfile extends StatelessWidget {
           const Icon(Icons.exit_to_app_outlined, color: Colors.black)
     };
     final userData = Provider.of<BackendProvider>(context);
-
     return Drawer(
       child: Column(
         children: [
@@ -136,15 +162,28 @@ class _DrawerProfile extends StatelessWidget {
                 itemCount: options.length,
                 separatorBuilder: (_, __) => const Divider(),
                 itemBuilder: (BuildContext context, int index) {
+                  final optionTitle = options.keys.toList()[index];
                   return ListTile(
                     title: Text(
-                      options.keys.toList()[index],
+                      optionTitle,
                       style: const TextStyle(
                         color: Color(0xff202725),
                       ),
                     ),
                     leading: options.values.toList()[index],
-                    onTap: () {},
+                    onTap: () {
+                      switch (optionTitle) {
+                        case 'Mi perfil':
+                          Navigator.pushNamed(context, 'profile',
+                              arguments: userData.userData);
+                          break;
+                        case 'Configuración':
+                          break;
+                        case 'Cerrar Sesión':
+                          break;
+                        default:
+                      }
+                    },
                   );
                 },
               ),
@@ -168,12 +207,182 @@ class _HomePage extends StatelessWidget {
         Container(height: 300, color: Colors.red),
         Expanded(
           child: Stack(
-            children: [
-              const Text('Hola'),
+            children: const [
+              Text('Hola'),
             ],
           ),
         )
       ],
+    );
+  }
+}
+
+class _AdminPage extends StatelessWidget {
+  const _AdminPage({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final pendingUsersProvider = Provider.of<BackendProvider>(context);
+    return Column(
+      children: [
+        //*Header---------------------------------------------------------------
+        Container(
+          child: Center(
+            child: Column(
+              children: const [
+                Text(
+                  'Solicitudes Pendientes',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          width: double.infinity,
+          height: size.height * 0.15,
+          decoration: const BoxDecoration(
+            color: Color(0xff1C2321),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(40),
+              bottomRight: Radius.circular(40),
+            ),
+          ),
+        ),
+
+        //*ListBuilder----------------------------------------------------------
+        FutureBuilder(
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              if ((snapshot.data as List<UserData>).isNotEmpty) {
+                return _PendingUsersBuilder(
+                    pendingUsersProvider: pendingUsersProvider,
+                    pendingUsers: snapshot.data as List<UserData>);
+              } else {
+                return const Expanded(
+                    child:
+                        Center(child: Text('No hay más usuarios por aprobar')));
+              }
+            }
+            return const Expanded(
+                child: Center(child: CircularProgressIndicator()));
+          },
+          future: pendingUsersProvider.getPendingUsers(),
+        )
+      ],
+    );
+  }
+}
+
+class _PendingUsersBuilder extends StatelessWidget {
+  const _PendingUsersBuilder({
+    Key? key,
+    required this.pendingUsers,
+    required this.pendingUsersProvider,
+  }) : super(key: key);
+
+  final List<UserData> pendingUsers;
+  final BackendProvider pendingUsersProvider;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: pendingUsers.length,
+        itemBuilder: (BuildContext context, int index) {
+          final item = pendingUsers[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xffFAFDFF),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 15,
+                    offset: Offset(0, 5),
+                  ),
+                ],
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+              ),
+              child: Dismissible(
+                key: Key(item.email!),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(item.avatar!),
+                        radius: 35,
+                      ),
+                      Column(
+                        children: [
+                          Text(item.name!),
+                          Text(item.email!),
+                        ],
+                      ),
+                      GestureDetector(
+                        child: const Icon(
+                          Icons.info_outline,
+                          size: 35,
+                        ),
+                        onTap: () => Navigator.pushNamed(context, 'profile',
+                            arguments: item),
+                      ),
+                    ],
+                  ),
+                ),
+                background: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.red[400],
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                  ),
+                  alignment: Alignment.centerLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Icon(
+                      Icons.remove_circle_outline,
+                      color: Colors.red[900],
+                      size: 35,
+                    ),
+                  ),
+                ),
+                secondaryBackground: Container(
+                  decoration: const BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                  ),
+                  alignment: Alignment.centerRight,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Icon(
+                      Icons.check_circle_outline,
+                      color: Colors.green[900],
+                      size: 35,
+                    ),
+                  ),
+                ),
+                onDismissed: (direction) {
+                  if (direction == DismissDirection.startToEnd) {
+                  } else {
+                    pendingUsersProvider.aproveUser(context, item.objectId!);
+                  }
+                },
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
