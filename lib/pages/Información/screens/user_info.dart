@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:open_wheels/classes/classes.dart';
 import 'package:open_wheels/providers/providers.dart';
 
 class UserProfileScreen extends StatelessWidget {
@@ -6,19 +7,19 @@ class UserProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as BackendProvider;
+    final args = ModalRoute.of(context)!.settings.arguments as UserData;
     final size = MediaQuery.of(context).size;
-    final dateTime = DateTime.parse(args.userData.birthday!);
+    final dateTime = DateTime.parse(args.birthday!);
     final data = {
-      'Nombres': args.userData.name,
-      'Apellidos': args.userData.surname,
-      'Identificación': args.userData.id,
-      "Teléfono": args.userData.phone,
+      'Nombres': args.name,
+      'Apellidos': args.surname,
+      'Identificación': args.id,
+      "Teléfono": args.phone,
       "Fecha de Nacimiento":
           '${dateTime.day}/${dateTime.month}/${dateTime.year}',
-      'Dirección': args.userData.address,
+      'Dirección': args.address,
       "Certificado Judicial": 'my-certificate.png',
-      "Calificación": args.userData.rating.toString()
+      "Calificación": args.rating.toString()
     };
     const dataIcons = [
       Icon(Icons.text_fields_outlined),
@@ -94,8 +95,7 @@ class UserProfileScreen extends StatelessWidget {
                                     context: context,
                                     builder: (_) => AlertDialog(
                                       title: const Text('Certificado Judicial'),
-                                      content: Image.network(
-                                          args.userData.certificate!),
+                                      content: Image.network(args.certificate!),
                                       elevation: 5,
                                       shape: RoundedRectangleBorder(
                                         borderRadius:
@@ -134,7 +134,7 @@ class _UserHeader extends StatelessWidget {
     required this.args,
   }) : super(key: key);
 
-  final BackendProvider args;
+  final UserData args;
 
   @override
   Widget build(BuildContext context) {
@@ -159,20 +159,20 @@ class _UserHeader extends StatelessWidget {
             CircleAvatar(
               radius: 24,
               backgroundColor: Colors.grey,
-              backgroundImage: NetworkImage(args.userData.avatar!),
+              backgroundImage: NetworkImage(args.avatar!),
             ),
             Expanded(
               child: Column(
                 children: [
                   Text(
-                    args.userData.name!,
+                    args.name!,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    args.userData.email!,
+                    args.email!,
                     style: const TextStyle(color: Colors.grey),
                   ),
                 ],

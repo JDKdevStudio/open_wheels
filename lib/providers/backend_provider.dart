@@ -89,20 +89,20 @@ class BackendProvider extends ChangeNotifier {
   }
 
   //!Panel administrador--------------------------------------------------------
-  final List<UserData> _pendingUsers = [];
+
   List<Car> pendingCars = [];
 
-  Future<List<UserData>> getPendingUsers() async {
-    _pendingUsers.clear();
+  static Future<List<UserData>> getPendingUsers() async {
     var response = await http.get(
         Uri.parse(
             'https://logicalgate.backendless.app/api/data/Users?where=userStatus%3D%27DISABLED%27'),
         headers: {'Content-Type': ''});
     List<dynamic> results = jsonDecode(response.body);
+    List<UserData> dataFuture = [];
     for (var e in results) {
-      _pendingUsers.add(UserData.fromJson(e));
+      dataFuture.add(UserData.fromJson(e));
     }
-    return _pendingUsers;
+    return dataFuture;
   }
 
   Future<void> aproveUser(BuildContext context, String userId) async {
@@ -114,21 +114,6 @@ class BackendProvider extends ChangeNotifier {
         {"userStatus": "ENABLED"},
       ),
     );
-    if (response.statusCode == 200) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Usuario aprobado exitosamente'),
-          action: SnackBarAction(label: 'cerrar', onPressed: () {}),
-        ),
-      );
-      notifyListeners();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Ha ocurrido un error, inténtelo mas tarde'),
-          action: SnackBarAction(label: 'cerrar', onPressed: () {}),
-        ),
-      );
-    }
+    if (response.statusCode != 200) {}
   }
 }

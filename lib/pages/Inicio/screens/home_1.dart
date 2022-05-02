@@ -1,6 +1,7 @@
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:open_wheels/classes/classes.dart';
+import 'package:open_wheels/pages/Inicio/widgets/widgets.dart';
+import 'package:open_wheels/pages/screens.dart';
 import 'package:open_wheels/providers/providers.dart';
 import 'package:provider/provider.dart';
 
@@ -34,34 +35,18 @@ class HomeScreen extends StatelessWidget {
             offset: Offset(0, -10),
           ),
         ]),
-        child: CurvedNavigationBar(
-          index: 0,
-          animationDuration: const Duration(milliseconds: 300),
-          backgroundColor: Colors.transparent,
-          items: [
-            const Icon(Icons.person_pin_circle_outlined, size: 30),
-            const Icon(Icons.map_outlined, size: 30),
-            const Icon(Icons.alt_route_outlined, size: 30),
-            const Icon(Icons.directions_car_outlined, size: 30),
-            if (userData.userData.role == 'admin')
-              const Icon(Icons.admin_panel_settings_outlined),
-          ],
-          onTap: (index) {
-            _pageNavigator.animateToPage(index,
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.ease);
-          },
-        ),
+        child:
+            CustomNavigator(userData: userData, pageNavigator: _pageNavigator),
       ),
       body: PageView(
         physics: const NeverScrollableScrollPhysics(),
         controller: _pageNavigator,
         children: [
           const _HomePage(),
-          _AssistantPage(),
-          _RouteCreatorPage(),
-          const _DriverPage(),
-          if (userData.userData.role == 'admin') const _AdminPage(),
+          const _AssistantPage(),
+          const _RouteCreatorPage(),
+          const _MyCarsPage(),
+          if (userData.userData.role == 'admin') const AdminPage(),
         ],
       ),
     );
@@ -75,7 +60,37 @@ class _RouteCreatorPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column();
+    final size = MediaQuery.of(context).size;
+    return Column(
+      children: [
+        //*Header---------------------------------------------------------------
+        Container(
+          child: Center(
+            child: Column(
+              children: const [
+                Text(
+                  'Mis Rutas',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          width: double.infinity,
+          height: size.height * 0.15,
+          decoration: const BoxDecoration(
+            color: Color(0xff1C2321),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(40),
+              bottomRight: Radius.circular(40),
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -120,8 +135,8 @@ class _AssistantPage extends StatelessWidget {
   }
 }
 
-class _DriverPage extends StatelessWidget {
-  const _DriverPage({
+class _MyCarsPage extends StatelessWidget {
+  const _MyCarsPage({
     Key? key,
   }) : super(key: key);
 
@@ -279,75 +294,7 @@ class _DrawerProfile extends StatelessWidget {
           const Icon(Icons.exit_to_app_outlined, color: Colors.black)
     };
     final userData = Provider.of<BackendProvider>(context);
-    return Drawer(
-      child: Column(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            height: MediaQuery.of(context).size.height * 0.35,
-            child: DrawerHeader(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    maxRadius: 60,
-                    backgroundImage: NetworkImage(userData.userData.avatar!),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    userData.userData.email!,
-                    style: const TextStyle(
-                        color: Colors.white54,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                ],
-              ),
-              decoration: const BoxDecoration(
-                color: Color(0XFF1C2321),
-              ),
-            ),
-          ),
-          Expanded(
-            child: ScrollConfiguration(
-              behavior: MyBehavior1(),
-              child: ListView.separated(
-                itemCount: options.length,
-                separatorBuilder: (_, __) => const Divider(),
-                itemBuilder: (BuildContext context, int index) {
-                  final optionTitle = options.keys.toList()[index];
-                  return ListTile(
-                    title: Text(
-                      optionTitle,
-                      style: const TextStyle(
-                        color: Color(0xff202725),
-                      ),
-                    ),
-                    leading: options.values.toList()[index],
-                    onTap: () {
-                      switch (optionTitle) {
-                        case 'Mi perfil':
-                          Navigator.pushNamed(context, 'profile',
-                              arguments: userData.userData);
-                          break;
-                        case 'Configuración':
-                          break;
-                        case 'Cerrar Sesión':
-                          break;
-                        default:
-                      }
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    return CustomDrawerNavigator(userData: userData, options: options);
   }
 }
 
@@ -358,30 +305,7 @@ class _HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(height: 300, color: Colors.red),
-        Expanded(
-          child: Stack(
-            children: const [
-              Text('Hola'),
-            ],
-          ),
-        )
-      ],
-    );
-  }
-}
-
-class _AdminPage extends StatelessWidget {
-  const _AdminPage({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    final pendingUsersProvider = Provider.of<BackendProvider>(context);
     return Column(
       children: [
         //*Header---------------------------------------------------------------
@@ -390,7 +314,7 @@ class _AdminPage extends StatelessWidget {
             child: Column(
               children: const [
                 Text(
-                  'Solicitudes Pendientes',
+                  'Panel Principal',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 25,
@@ -410,143 +334,10 @@ class _AdminPage extends StatelessWidget {
             ),
           ),
         ),
-
-        //*ListBuilder----------------------------------------------------------
-        FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              if ((snapshot.data as List<UserData>).isNotEmpty) {
-                return _PendingUsersBuilder(
-                    pendingUsersProvider: pendingUsersProvider,
-                    pendingUsers: snapshot.data as List<UserData>);
-              } else {
-                return const Expanded(
-                    child:
-                        Center(child: Text('No hay más usuarios por aprobar')));
-              }
-            }
-            return const Expanded(
-                child: Center(child: CircularProgressIndicator()));
-          },
-          future: pendingUsersProvider.getPendingUsers(),
-        )
+        IconButton(
+            onPressed: () => Navigator.pushNamed(context, 'register_route'),
+            icon: const Icon(Icons.abc))
       ],
     );
-  }
-}
-
-class _PendingUsersBuilder extends StatelessWidget {
-  const _PendingUsersBuilder({
-    Key? key,
-    required this.pendingUsers,
-    required this.pendingUsersProvider,
-  }) : super(key: key);
-
-  final List<UserData> pendingUsers;
-  final BackendProvider pendingUsersProvider;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        itemCount: pendingUsers.length,
-        itemBuilder: (BuildContext context, int index) {
-          final item = pendingUsers[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
-            child: Container(
-              decoration: const BoxDecoration(
-                color: Color(0xffFAFDFF),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 15,
-                    offset: Offset(0, 5),
-                  ),
-                ],
-                borderRadius: BorderRadius.all(Radius.circular(10)),
-              ),
-              child: Dismissible(
-                key: Key(item.email!),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: NetworkImage(item.avatar!),
-                        radius: 35,
-                      ),
-                      Column(
-                        children: [
-                          Text(item.name!),
-                          Text(item.email!),
-                        ],
-                      ),
-                      GestureDetector(
-                        child: const Icon(
-                          Icons.info_outline,
-                          size: 35,
-                        ),
-                        onTap: () => Navigator.pushNamed(context, 'profile',
-                            arguments: item),
-                      ),
-                    ],
-                  ),
-                ),
-                background: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.red[400],
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                  ),
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Icon(
-                      Icons.remove_circle_outline,
-                      color: Colors.red[900],
-                      size: 35,
-                    ),
-                  ),
-                ),
-                secondaryBackground: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.green,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                  ),
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 15),
-                    child: Icon(
-                      Icons.check_circle_outline,
-                      color: Colors.green[900],
-                      size: 35,
-                    ),
-                  ),
-                ),
-                onDismissed: (direction) {
-                  if (direction == DismissDirection.startToEnd) {
-                  } else {
-                    pendingUsersProvider.aproveUser(context, item.objectId!);
-                  }
-                },
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class MyBehavior1 extends ScrollBehavior {
-  @override
-  Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
   }
 }

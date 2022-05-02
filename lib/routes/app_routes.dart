@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:open_wheels/screens/screens.dart';
+import 'package:open_wheels/pages/screens.dart';
 
 class AppRoutes {
   static Map<String, Widget Function(BuildContext)> routes = {
@@ -14,5 +14,6 @@ class AppRoutes {
     'register_route': (_) => const RegisterRouteScreen(),
     'register_car': (_) => const RegisterCarScreen(),
      'car_info': (_) => const CarInfoScreen(),
+    'route_info': (_) => const RouteInfoScreen()
   };
 }
