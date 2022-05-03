@@ -4,27 +4,14 @@ import 'package:open_wheels/providers/providers.dart';
 import 'package:open_wheels/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
-class AdminPage extends StatefulWidget {
-  const AdminPage({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  State<AdminPage> createState() => _AdminPageState();
-}
-
-class _AdminPageState extends State<AdminPage> {
-  late Future<List<dynamic>> dataFuture;
-  @override
-  void initState() {
-    dataFuture = BackendProvider.getPendingUsersAndCars();
-    super.initState();
-  }
+class VehiclesPage extends StatelessWidget {
+  const VehiclesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final backendProvider = Provider.of<BackendProvider>(context);
+    final formProvider = Provider.of<FormProvider>(context, listen: false);
     return Column(
       children: [
         //*Header---------------------------------------------------------------
@@ -33,7 +20,7 @@ class _AdminPageState extends State<AdminPage> {
             child: Column(
               children: const [
                 Text(
-                  'Solicitudes de Usuario y Vehículos',
+                  'Mis Vehículos',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -56,8 +43,8 @@ class _AdminPageState extends State<AdminPage> {
         ),
 
         //*ListBuilder----------------------------------------------------------
-        FutureBuilder<List<dynamic>>(
-          future: dataFuture,
+        FutureBuilder<List<Car>>(
+          future: backendProvider.getuserCars(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
               final pendingData = snapshot.data!;
@@ -66,19 +53,32 @@ class _AdminPageState extends State<AdminPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.hourglass_disabled_outlined,
+                          Icon(Icons.car_rental_outlined,
                               size: size.width * 0.3, color: Colors.grey),
                           const SizedBox(
                             height: 15,
                           ),
                           const Text(
-                            'No hay más usuarios por aceptar',
+                            'No tienes vehículos registrados',
                             style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w800,
                               fontSize: 20,
                             ),
                           ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              primary: const Color(0xff1C2321),
+                            ),
+                            onPressed: () {
+                              formProvider.resetPicker();
+                              Navigator.pushNamed(context, 'register_car');
+                            },
+                            child: const Text('Registrar Vehículo'),
+                          )
                         ],
                       ),
                     )
@@ -88,35 +88,7 @@ class _AdminPageState extends State<AdminPage> {
                         itemCount: pendingData.length,
                         itemBuilder: (_, index) {
                           final item = pendingData[index];
-                          return Dismissible(
-                            key: Key(item.objectId!),
-                            background: const RemoveDismiss(),
-                            secondaryBackground: const AcceptDismiss(),
-                            onDismissed: (direction) {
-                              setState(() {
-                                pendingData.remove(item);
-                                if (direction == DismissDirection.startToEnd) {
-                                  item is UserData
-                                      ? backendProvider.deleteUser(
-                                          context, item.objectId!)
-                                      : backendProvider.deleteCar(
-                                          context, item.objectId!);
-                                } else {
-                                  item is UserData
-                                      ? backendProvider.aproveUser(
-                                          context, item.objectId!)
-                                      : backendProvider.aproveCar(
-                                          context, item.objectId!);
-                                }
-
-                                if (pendingData.isEmpty) {
-                                  dataFuture =
-                                      BackendProvider.getPendingUsersAndCars();
-                                }
-                              });
-                            },
-                            child: CardInfo(item: item),
-                          );
+                          return CardInfo(item: item);
                         },
                       ),
                     );

@@ -90,18 +90,33 @@ class BackendProvider extends ChangeNotifier {
 
   //!Panel administrador--------------------------------------------------------
 
-  List<Car> pendingCars = [];
+  static Future<List<dynamic>> getPendingUsersAndCars() async {
+    List<dynamic> dataFuture = [];
+    await Future.delayed(
+      const Duration(milliseconds: 500),
+      () async {
+        //get Pending Users
+        var response = await http.get(
+          Uri.parse(
+              'https://logicalgate.backendless.app/api/data/Users?where=userStatus%3D%27DISABLED%27'),
+        );
+        List<dynamic> results = jsonDecode(response.body);
+        for (var e in results) {
+          dataFuture.add(UserData.fromJson(e));
+        }
 
-  static Future<List<UserData>> getPendingUsers() async {
-    var response = await http.get(
-        Uri.parse(
-            'https://logicalgate.backendless.app/api/data/Users?where=userStatus%3D%27DISABLED%27'),
-        headers: {'Content-Type': ''});
-    List<dynamic> results = jsonDecode(response.body);
-    List<UserData> dataFuture = [];
-    for (var e in results) {
-      dataFuture.add(UserData.fromJson(e));
-    }
+        //get Pending Cars
+        response = await http.get(
+          Uri.parse(
+              'https://logicalgate.backendless.app/api/data/cars?where=carStatus%3D%27DISABLED%27'),
+        );
+        results = jsonDecode(response.body);
+        for (var e in results) {
+          dataFuture.add(Car.fromJson(e));
+        }
+      },
+    );
+
     return dataFuture;
   }
 
@@ -114,6 +129,32 @@ class BackendProvider extends ChangeNotifier {
         {"userStatus": "ENABLED"},
       ),
     );
+    if (response.statusCode != 200) {}
+  }
+
+  Future<void> deleteUser(BuildContext context, String objectId) async {
+    var response = await http.delete(
+      Uri.parse('https://logicalgate.backendless.app/api/data/Users'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"objectId": objectId}),
+    );
+    if (response.statusCode != 200) {}
+  }
+
+  Future<void> aproveCar(BuildContext context, String objectId) async {
+    var response = await http.put(
+      Uri.parse('https://logicalgate.backendless.app/api/data/cars/$objectId'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(
+        {"carStatus": "ENABLED"},
+      ),
+    );
+    if (response.statusCode != 200) {}
+  }
+
+  Future<void> deleteCar(BuildContext context, String objectId) async {
+    var response = await http.delete(Uri.parse(
+        'https://logicalgate.backendless.app/api/data/cars/$objectId'));
     if (response.statusCode != 200) {}
   }
 }

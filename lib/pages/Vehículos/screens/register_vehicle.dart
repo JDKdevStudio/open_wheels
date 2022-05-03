@@ -59,7 +59,7 @@ class _RegisterCarForm extends StatelessWidget {
     return Form(
         key: registerCarForm.formkey,
         child: ScrollConfiguration(
-          behavior: MyBehavior2(),
+          behavior: MyBehavior(),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Column(
@@ -310,13 +310,5 @@ class _FormFields extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class MyBehavior2 extends ScrollBehavior {
-  @override
-  Widget buildOverscrollIndicator(
-      BuildContext context, Widget child, ScrollableDetails details) {
-    return child;
   }
 }

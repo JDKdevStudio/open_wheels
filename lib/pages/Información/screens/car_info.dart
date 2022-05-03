@@ -20,8 +20,8 @@ class CarInfoScreen extends StatelessWidget {
     const dataIcons = [
       Icon(Icons.notes_outlined),
       Icon(Icons.directions_car_outlined),
+      Icon(Icons.garage_outlined),
       Icon(Icons.groups_outlined),
-      Icon(Icons.phone_outlined),
       Icon(Icons.palette_outlined),
       ImageIcon(
         NetworkImage(

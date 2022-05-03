@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:open_wheels/classes/classes.dart';
-import 'package:open_wheels/providers/providers.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({Key? key}) : super(key: key);
