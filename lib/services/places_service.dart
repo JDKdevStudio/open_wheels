@@ -45,4 +45,23 @@ class PlacesService extends ChangeNotifier {
     Future.delayed(const Duration(milliseconds: 301))
         .then((_) => timer.cancel());
   }
+
+  //get route points
+  Future<Map<String, dynamic>> getDirections(
+      String origin, String destination) async {
+    String originPlace = 'place_id:' + origin;
+    String destinationPlace = 'place_id:' + destination;
+    var url =
+        'https://maps.googleapis.com/maps/api/directions/json?origin=$originPlace&destination=$destinationPlace&key=$_key';
+    var response = await http.get(Uri.parse(url));
+    var json = convert.jsonDecode(response.body);
+    var results = {
+      'bounds_ne': json['routes'][0]['bounds']['northeast'],
+      'bounds_sw': json['routes'][0]['bounds']['southwest'],
+      'start_location': json['routes'][0]['legs'][0]['start_location'],
+      'end_location': json['routes'][0]['legs'][0]['end_location'],
+      'polyline': json['routes'][0]['overview_polyline']['points']
+    };
+    return results;
+  }
 }

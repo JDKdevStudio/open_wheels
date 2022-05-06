@@ -14,6 +14,7 @@ class AppRoutes {
     'register_route': (_) => const RegisterRouteScreen(),
     'register_car': (_) => const RegisterCarScreen(),
     'car_info': (_) => const CarInfoScreen(),
-    'route_info': (_) => const RouteInfoScreen()
+    'route_info': (_) => const RouteInfoScreen(),
+    'map': (_) => const MapScreen()
   };
 }

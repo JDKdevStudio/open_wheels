@@ -4,8 +4,8 @@ import 'package:open_wheels/providers/providers.dart';
 import 'package:open_wheels/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
-class VehiclesPage extends StatelessWidget {
-  const VehiclesPage({Key? key}) : super(key: key);
+class RoutesPage extends StatelessWidget {
+  const RoutesPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class VehiclesPage extends StatelessWidget {
             child: Column(
               children: const [
                 Text(
-                  'Mis Vehículos',
+                  'Mis Rutas',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     color: Colors.white,
@@ -43,23 +43,24 @@ class VehiclesPage extends StatelessWidget {
         ),
 
         //*ListBuilder----------------------------------------------------------
-        FutureBuilder<List<Car>>(
-          future: backendProvider.getUserCars(),
+        FutureBuilder<List<Routes>>(
+          future: backendProvider.getUserRoutes(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.done) {
-              final pendingData = snapshot.data!;
-              return pendingData.isEmpty
+              final routesData = snapshot.data!;
+              backendProvider.getUserCars();
+              return routesData.isEmpty
                   ? Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.car_rental_outlined,
+                          Icon(Icons.map_outlined,
                               size: size.width * 0.3, color: Colors.grey),
                           const SizedBox(
                             height: 15,
                           ),
                           const Text(
-                            'No tienes vehículos registrados',
+                            'No tienes rutas registradas',
                             style: TextStyle(
                               color: Colors.grey,
                               fontWeight: FontWeight.w800,
@@ -73,11 +74,12 @@ class VehiclesPage extends StatelessWidget {
                             style: ElevatedButton.styleFrom(
                               primary: const Color(0xff1C2321),
                             ),
-                            onPressed: () {
+                            onPressed: () async {
                               formProvider.resetPicker();
-                              Navigator.pushNamed(context, 'register_car');
+                              await backendProvider.getUserCars();
+                              Navigator.pushNamed(context, 'register_route');
                             },
-                            child: const Text('Registrar Vehículo'),
+                            child: const Text('Registrar Rutas'),
                           )
                         ],
                       ),
@@ -85,9 +87,9 @@ class VehiclesPage extends StatelessWidget {
                   : Expanded(
                       child: ListView.builder(
                         padding: const EdgeInsets.symmetric(vertical: 15),
-                        itemCount: pendingData.length,
+                        itemCount: routesData.length,
                         itemBuilder: (_, index) {
-                          final item = pendingData[index];
+                          final item = routesData[index];
                           return CardInfo(item: item);
                         },
                       ),

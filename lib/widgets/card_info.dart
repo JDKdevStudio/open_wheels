@@ -11,7 +11,37 @@ class CardInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return item is UserData ? _UserCard(item: item) : _CarCard(item: item);
+    return item is Routes
+        ? _RouteCard(item: item)
+        : item is UserData
+            ? _UserCard(item: item)
+            : _CarCard(item: item);
+  }
+}
+
+class _RouteCard extends StatelessWidget {
+  const _RouteCard({
+    Key? key,
+    required this.item,
+  }) : super(key: key);
+
+  final Routes item;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundImage: NetworkImage(item.car!.photo!),
+        ),
+        title: Text(item.name!),
+        subtitle: Text(item.user!.name! + " " + item.user!.surname!),
+        trailing: const Icon(Icons.map_outlined),
+        onTap: () =>
+            Navigator.pushNamed(context, 'route_info', arguments: item),
+      ),
+    );
   }
 }
 

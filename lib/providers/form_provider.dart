@@ -2,6 +2,9 @@ import 'package:cloudinary_public/cloudinary_public.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:open_wheels/classes/classes.dart';
+import 'package:open_wheels/classes/place_search.dart';
+import 'package:open_wheels/services/places_service.dart';
+import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
 class FormProvider extends ChangeNotifier {
@@ -23,12 +26,7 @@ class FormProvider extends ChangeNotifier {
 
   //*Fecha de nacimiento--------------------------------------------------------
   final datePicker = TextEditingController();
-  DateTime? _dateTime;
-  DateTime? get dateTime => _dateTime;
-  set dateTime(DateTime? value) {
-    _dateTime = value;
-    notifyListeners();
-  }
+  DateTime? dateTime;
 
 //*Identificación---------------------------------------------------------------
   String identificacion = '';
@@ -99,9 +97,17 @@ class FormProvider extends ChangeNotifier {
         'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/certificate.png';
     certificateName.text = '';
     datePicker.text = '';
+    dateTime = null;
     photoCar =
         'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/photoCar.png';
     photoCarName.text = '';
+    pointOriginName.text = '';
+    pointFinalName.text = '';
+    routeDatePicker.text = '';
+    routeTimePicker.text = '';
+    routeDate = null;
+    routeTime = null;
+    routeVehicle = null;
   }
 
 //*Generar userRegiser class----------------------------------------------------
@@ -153,6 +159,57 @@ class FormProvider extends ChangeNotifier {
       card: certificate,
       placa: placa,
       capacidad: int.parse(capacidad),
+    );
+  }
+
+//!Nombre ruta------------------------------------------------------------------
+  String routeName = '';
+
+//!Punto origen-----------------------------------------------------------------
+  String pointOriginImage =
+      'https://backendlessappcontent.com/5CA932F0-D1D2-EE15-FF54-D3B5A8EE8C00/11F83B1D-DE01-4318-852F-1B9E4AECE9E1/files/open_wheels/res/location.png';
+  final pointOriginName = TextEditingController();
+  String pointOrigin = '';
+
+//!Punto final------------------------------------------------------------------
+  final pointFinalName = TextEditingController();
+  String pointFinal = '';
+
+//!Fecha de ruta----------------------------------------------------------------
+  final routeDatePicker = TextEditingController();
+  DateTime? routeDate;
+
+//!Hora de ruta-----------------------------------------------------------------
+  final routeTimePicker = TextEditingController();
+  TimeOfDay? routeTime;
+
+//!Vehículo de ruta-------------------------------------------------------------
+  Car? routeVehicle;
+
+//!Generar Route class----------------------------------------------------------
+  Future<Routes> routesDataValues(
+      BuildContext context, UserData userData) async {
+    var routeId = const Uuid();
+    final registerRoute = Provider.of<PlacesService>(context, listen: false);
+    late final Map<String, dynamic> path;
+    final routeDateTime = DateTime(
+      routeDate!.day,
+      routeDate!.month,
+      routeDate!.year,
+      routeTime!.hour,
+      routeTime!.minute,
+    );
+    await registerRoute
+        .getDirections(pointOrigin, pointFinal)
+        .then((value) => path = value);
+    return Routes(
+      car: routeVehicle,
+      cupos: routeVehicle!.capacidad,
+      datetime: routeDateTime.toString(),
+      name: routeName,
+      path: path,
+      user: userData,
+      routeId: routeId.v1(),
     );
   }
 

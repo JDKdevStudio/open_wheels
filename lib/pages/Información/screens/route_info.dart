@@ -2,8 +2,8 @@
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:open_wheels/classes/classes.dart';
 import 'package:open_wheels/widgets/scroll_behavior.dart';
-
 
 class RouteInfoScreen extends StatelessWidget {
   const RouteInfoScreen({Key? key}) : super(key: key);
@@ -37,9 +37,9 @@ class RouteInfoScreen extends StatelessWidget {
 class _RoutePoints extends StatelessWidget {
   final int puntosDestino;
 
-  Map<String, String> puntosDestinoNombres = {};
+  final Map<String, String> puntosDestinoNombres;
 
-  _RoutePoints(
+  const _RoutePoints(
       {Key? key,
       required this.puntosDestino,
       required this.puntosDestinoNombres})
@@ -68,7 +68,7 @@ class _RoutePoints extends StatelessWidget {
                         Container(
                           margin: EdgeInsets.symmetric(horizontal: 7),
                           width: 15,
-                          height: 120,
+                          height: 102,
                           decoration: BoxDecoration(
                             color: Color(0xff5E6572),
                           ),
@@ -146,6 +146,7 @@ class UpperBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Routes;
     return Expanded(
       child: Stack(children: [
         _Box(),
@@ -157,7 +158,7 @@ class UpperBar extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: size.height * 0.076),
-              Text('Provenza - UPB',
+              Text(args.name!,
                   style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 30,
@@ -171,11 +172,12 @@ class UpperBar extends StatelessWidget {
                     children: [
                       TextMin(
                         nombreInicial: "Hora: ",
-                        nombreContenido: "3 PM",
+                        nombreContenido: args.datetime!.substring(11, 16),
                       ),
                       SizedBox(height: size.height * 0.011),
                       TextMin(
-                          nombreInicial: "Placa: ", nombreContenido: "HHC-352")
+                          nombreInicial: "Placa: ",
+                          nombreContenido: args.car!.placa!)
                     ],
                   ),
                   SizedBox(width: size.width * 0.14),
@@ -188,7 +190,7 @@ class UpperBar extends StatelessWidget {
                       ),
                       SizedBox(height: size.height * 0.011),
                       TextMin(
-                          nombreInicial: "Fecha: ", nombreContenido: "30/04/22")
+                          nombreInicial: "Fecha: ", nombreContenido: "4/05/22")
                     ],
                   )
                 ],
@@ -204,9 +206,10 @@ class UpperBar extends StatelessWidget {
                 height: 30,
                 width: 250,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () =>
+                      Navigator.pushNamed(context, 'map', arguments: args),
                   child: const Text(
-                    'Ingresar',
+                    'Ver Mapa',
                     style: TextStyle(fontSize: 14, color: Color(0xff1C2321)),
                   ),
                   style: TextButton.styleFrom(
@@ -232,7 +235,7 @@ class UpperBar extends StatelessWidget {
                       fontWeight: FontWeight.w700,
                       fontSize: 18,
                       color: Color(0xff1C2321))),
-              Text("2/5",
+              Text("1/5",
                   style: TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 18,
@@ -308,8 +311,8 @@ class _Box extends StatelessWidget {
       decoration: _colorBackground(),
       child: ClipRRect(
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(65),
-          bottomRight: Radius.circular(65),
+          bottomLeft: Radius.circular(50),
+          bottomRight: Radius.circular(50),
         ),
         child: Stack(
           children: [
@@ -338,8 +341,8 @@ class _Box extends StatelessWidget {
 
 BoxDecoration _colorBackground() => const BoxDecoration(
       borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(65),
-        bottomRight: Radius.circular(65),
+        bottomLeft: Radius.circular(50),
+        bottomRight: Radius.circular(50),
       ),
       color: Color(0xff1C2321),
       boxShadow: [

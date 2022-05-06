@@ -9,7 +9,7 @@ class UserData {
   String? surname;
   String? name;
   String? id;
-  double? rating;
+  num? rating;
   String? userToken;
   String? objectId;
   String? email;

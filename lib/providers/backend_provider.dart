@@ -60,15 +60,43 @@ class BackendProvider extends ChangeNotifier {
     return true;
   }
 
+//!Obtener rutas----------------------------------------------------------------
+  final List<Routes> _userRoutes = [];
+  List<Routes> get userRoutes => _userRoutes;
+
+  Future<List<Routes>> getUserRoutes() async {
+    _userRoutes.clear();
+    var response = await http.get(Uri.parse(
+        'https://logicalgate.backendless.app/api/data/routes?where=user%20LIKE%20%27%25${userData.email}%25%27'));
+    List<dynamic> results = jsonDecode(response.body);
+    for (var e in results) {
+      _userRoutes.add(Routes.fromJson(e));
+    }
+    return _userRoutes;
+  }
+
+//!Registrar rutas--------------------------------------------------------------
+  Future<bool> routeRegister(Routes routes) async {
+    var response = await http.post(
+        Uri.parse('https://logicalgate.backendless.app/api/data/routes'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(routes.toJson()));
+    if (response.statusCode != 200) {
+      return false;
+    }
+    return true;
+  }
+
 //!Obtener vehículos------------------------------------------------------------
   final List<Car> _userCars = [];
+  List<Car> get userCars => _userCars;
 
-  Future<List<Car>> getuserCars() async {
+  Future<List<Car>> getUserCars() async {
     _userCars.clear();
     var response = await http.get(
-        Uri.parse(
-            'https://logicalgate.backendless.app/api/data/cars?where=carStatus%20%3D%27ENABLED%27%20and%20user%3D%27${userData.email}%27'),
-        headers: {'Content-Type': ''});
+      Uri.parse(
+          'https://logicalgate.backendless.app/api/data/cars?where=carStatus%20%3D%27ENABLED%27%20and%20user%3D%27${userData.email}%27'),
+    );
     List<dynamic> results = jsonDecode(response.body);
     for (var e in results) {
       _userCars.add(Car.fromJson(e));

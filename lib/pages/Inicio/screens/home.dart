@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:open_wheels/classes/classes.dart';
 import 'package:open_wheels/pages/Inicio/widgets/widgets.dart';
 import 'package:open_wheels/pages/screens.dart';
 import 'package:open_wheels/providers/providers.dart';
+import 'package:open_wheels/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -32,54 +34,13 @@ class HomeScreen extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         controller: _pageNavigator,
         children: [
-          const _HomePage(),
+          const InicioPage(),
           const _AssistantPage(),
-          const _RouteCreatorPage(),
+          const RoutesPage(),
           const VehiclesPage(),
           if (userData.userData.role == 'admin') const AdminPage(),
         ],
       ),
-    );
-  }
-}
-
-class _RouteCreatorPage extends StatelessWidget {
-  const _RouteCreatorPage({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Column(
-      children: [
-        //*Header---------------------------------------------------------------
-        Container(
-          child: Center(
-            child: Column(
-              children: const [
-                Text(
-                  'Mis Rutas',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          width: double.infinity,
-          height: size.height * 0.15,
-          decoration: const BoxDecoration(
-            color: Color(0xff1C2321),
-            borderRadius: BorderRadius.only(
-              bottomLeft: Radius.circular(40),
-              bottomRight: Radius.circular(40),
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -92,6 +53,8 @@ class _AssistantPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final backendProvider = Provider.of<BackendProvider>(context);
+    final formProvider = Provider.of<FormProvider>(context, listen: false);
     return Column(
       children: [
         //*Header---------------------------------------------------------------
@@ -120,6 +83,80 @@ class _AssistantPage extends StatelessWidget {
             ),
           ),
         ),
+
+        FutureBuilder<List<Routes>>(
+          future: backendProvider.getUserRoutes(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.done) {
+              final routesData = snapshot.data!;
+              backendProvider.getUserCars();
+              return routesData.isEmpty
+                  ? Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.map_outlined,
+                              size: size.width * 0.3, color: Colors.grey),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                          const Text(
+                            'No hay rutas en el sistema',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 20,
+                            ),
+                          ),
+                          const SizedBox(
+                            height: 15,
+                          ),
+                        ],
+                      ),
+                    )
+                  : Expanded(
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        itemCount: routesData.length,
+                        itemBuilder: (_, index) {
+                          final item = routesData[index];
+                          return GestureDetector(
+                              onLongPress: () {
+                                showDialog(
+                                  barrierDismissible: true,
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: const Text(
+                                        'Inscrito en Ruta Satisfactoriamente'),
+                                    elevation: 5,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadiusDirectional.circular(10),
+                                    ),
+                                    backgroundColor: Colors.white,
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cerrar'),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              },
+                              child: CardInfo(item: item));
+                        },
+                      ),
+                    );
+            }
+            return const Expanded(
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xff1C2321),
+                ),
+              ),
+            );
+          },
+        )
       ],
     );
   }

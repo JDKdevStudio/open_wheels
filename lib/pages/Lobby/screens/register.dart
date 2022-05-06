@@ -234,13 +234,13 @@ class _FormFields extends StatelessWidget {
             },
             onTap: () => showDatePicker(
                     context: context,
-                    initialDate: DateTime(2021, 4, 21),
-                    firstDate: DateTime(1900, 4, 21),
-                    lastDate: DateTime(2022))
+                    initialDate: DateTime(2022),
+                    firstDate: DateTime(1900, 1, 1),
+                    lastDate: DateTime(DateTime.now().year + 1))
                 .then(
               (value) {
                 if (value != null) {
-                  registerForm.dateTime =value;
+                  registerForm.dateTime = value;
                   registerForm.datePicker.text =
                       '${registerForm.dateTime?.day}/${registerForm.dateTime?.month}/${registerForm.dateTime?.year}';
                 }
